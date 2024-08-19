@@ -1,0 +1,65 @@
+[tool.poetry]
+name = "basin"
+version = "0.0.1"
+description = "Basin + Grass Reddit dataset with ML labeling"
+authors = ["Dan Buchholz"]
+license = "Apache-2.0"
+classifiers = [
+    "License :: OSI Approved :: Apache Software License"
+]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+datasets = "^2.20.0"
+polars = "^1.4.1"
+torch = "^2.3.1"
+transformers = "^4.44.0"
+numpy = "^1"
+boto3 = "^1.34.161"
+python-dotenv = "^1.0.1"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.4.0"
+flake8 = "^7.0.0"
+isort = "^5.13.2"
+mypy = "^1.9.0"
+pre-commit = "^3.7.0"
+poethepoet = "^0.25.1"
+
+[tool.poe.tasks]
+pre-commit-install = "pre-commit install -t pre-commit"
+pre-push-install = "pre-commit install -t pre-push"
+pre-commit = ["pre-commit-install", "pre-push-install"]
+git-init = "git init"
+init = ["git-init", "pre-commit"]
+isort = "isort --atomic ."
+black = "black ."
+flake8 = "flake8"
+mypy = "mypy"
+lint = ["black", "isort", "flake8", "mypy"]
+build = "poetry build"
+initialize = "python -m src.initialize" # Create an object store & write Grass dataset to it
+classify = "python -m src.classify" # Run classifier on the dataset (sentimetn + labels)
+
+[tool.flake8]
+ignore = "E203, E266, E501, W503"
+max-line-length = 88
+max-complexity = 18
+select = "B,C,E,F,W,T4"
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 88
+profile = "black"
+
+[tool.mypy]
+files = ["src"]
+ignore_missing_imports = false
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
